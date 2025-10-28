@@ -4,70 +4,58 @@ from torch.utils.data.dataset import Dataset
 from torch.utils.data.dataloader import DataLoader
 import torch.optim as optim
 
+# Reading the file
 try: 
     with open("random_text.txt", encoding="utf-8") as file:
         text = file.read()
 except FileNotFoundError:
     print("File not found")
 
+# Creating a dictionary of unique words and creating an array to store all the words
 word = ""
+words = []
 dictionary = {}
 num = 1
 for letter in text:
     if letter == " " or letter == "\n" or letter in ".?/,}{][)(=+-_*&^%$#@!;:":
+        if word == "":
+            continue
         if word.lower() not in dictionary:
             dictionary[word.lower()] = num 
             num += 1
+        words.append(word.lower())
         word = ""
     else:
-        word += letter
+        word += letter    
 
-input, target = [], []
-for i, j in dictionary.items():
-    if j > 0 and j < len(dictionary): 
-        input.append(i)
-    if j > 1 and j < len(dictionary) + 1:
-        target.append(i)         
-
+# Encoding words to numerical values
+encoded_text = []
+for word in words:
+    encoded_text.append(dictionary[word])
+    
 sequence_size = 30
-text_embedded = []
-word = ""
-for letter in text:
-    if letter == " " or letter == "\n" or letter in ".?/,}{][)(=+-_*&^%$#@!;:":
-        text_embedded.append(dictionary[word.lower()])
-        word = ""
-    else:
-        word += letter
+inputs, targets = [], []
+for i in range(len(encoded_text) - sequence_size):
+    inputs.append(encoded_text[i:i+sequence_size])
+    targets.append(encoded_text[i+1:i+sequence_size+1])
 
-sequence_size = 30
-text_embedded_tensor = []
-i = 0
-while i < len(text_embedded):
-    end_index = int(sequence_size * ((i / sequence_size) + 1))
-    text_embedded_tensor.append(text_embedded[i:end_index])
-    i = end_index
-
-for arr in text_embedded_tensor:
-    if len(arr) < 30:
-        while len(arr) < 30:
-            arr.append(-1)
-
-text_embedded_tensor = torch.tensor(text_embedded_tensor)
+encoded_text = torch.tensor(encoded_text)
+inputs = torch.tensor(inputs)
+targets = torch.tensor(targets)
 
 class CustomTextDataset(Dataset):
-    def __init__(self, text_data):
-        self.text_data = text_data
+    def __init__(self, inputs, targets):
+        self.inputs = inputs
+        self.targets = targets
     
     def __len__(self):
-        return len(self.text_data)
+        return len(self.inputs)
     
     def __getitem__(self, idx):
-        return self.text_data[idx]
+        return self.inputs[idx], self.targets[idx]
     
-training_data = CustomTextDataset(text_embedded_tensor)
-test_data = CustomTextDataset(text_embedded_tensor)
+training_data = CustomTextDataset(inputs, targets)
 train_loader = DataLoader(training_data, batch_size=2, shuffle=False)
-test_loader = DataLoader(test_data, batch_size=2, shuffle=False)
 
 class SimpleRNN(nn.Module):
     def __init__(self, vocab_size, embed_size, hidden_size):
@@ -81,19 +69,26 @@ class SimpleRNN(nn.Module):
         out = self.fc(out)
         return out
 
-MyRNN = SimpleRNN(len(dictionary), len(text_embedded_tensor), len(text_embedded_tensor))
+vocab_size = len(dictionary) + 1
+embed_size = 64
+hidden_size = 64
+MyRNN = SimpleRNN(vocab_size, embed_size, hidden_size)
+optimizier = optim.Adam(MyRNN.parameters(), lr=0.001)
+criterion = nn.CrossEntropyLoss()
 
-epochs = 1
+epochs = 1000
+tar_p, out_p = [], []
 for epoch in range(epochs):
-    data = train_loader
-    print(data)
-    prediction = MyRNN(text_embedded_tensor)
-    optimizier = optim.Adam(prediction.parameters(), lr=0.001)
-    optimizier.zero_grad()
-    e_loss = nn.CrossEntropyLoss()
-    loss = e_loss(prediction, test_data)
-    loss.backward()
-    optimizier.step()
+    for inp, tar in train_loader:
+        optimizier.zero_grad()
+        output = MyRNN(inp)
+        output = output.view(-1, vocab_size)
+        tar = tar.view(-1)
+        loss = criterion(output, tar)
+        loss.backward()
+        optimizier.step()
+    tar_p, out_p = tar, output
+    if epoch % 100 == 0: print(f"At epoch {epoch}, loss: {loss}")
 
-    print(f"At epoch {epoch}: train_error: {loss}")
+torch.save(MyRNN.state_dict(), "my_rnn_model.pth")
 
