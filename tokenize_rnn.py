@@ -33,6 +33,7 @@ encoded_text = []
 for word in words:
     encoded_text.append(dictionary[word])
     
+# Converting the text to sequences of 30 each -> helps with training
 sequence_size = 30
 inputs, targets = [], []
 for i in range(len(encoded_text) - sequence_size):
@@ -43,6 +44,7 @@ encoded_text = torch.tensor(encoded_text)
 inputs = torch.tensor(inputs)
 targets = torch.tensor(targets)
 
+# Creating a dataset class for better data processing
 class CustomTextDataset(Dataset):
     def __init__(self, inputs, targets):
         self.inputs = inputs
@@ -53,10 +55,12 @@ class CustomTextDataset(Dataset):
     
     def __getitem__(self, idx):
         return self.inputs[idx], self.targets[idx]
-    
+
 training_data = CustomTextDataset(inputs, targets)
+# Loading the data, keeping shuffle False for now
 train_loader = DataLoader(training_data, batch_size=2, shuffle=False)
 
+# Model building
 class SimpleRNN(nn.Module):
     def __init__(self, vocab_size, embed_size, hidden_size):
         super().__init__()
@@ -76,6 +80,7 @@ MyRNN = SimpleRNN(vocab_size, embed_size, hidden_size)
 optimizier = optim.Adam(MyRNN.parameters(), lr=0.001)
 criterion = nn.CrossEntropyLoss()
 
+# Training
 epochs = 1000
 tar_p, out_p = [], []
 for epoch in range(epochs):

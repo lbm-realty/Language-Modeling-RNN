@@ -1,4 +1,4 @@
-import torch as torch
+import torch
 import torch.nn as nn
 
 # Reading the file and enocding the text
@@ -24,13 +24,15 @@ for letter in text:
     else:
         word += letter    
 
+unique_words_nums = [number for number in dictionary.values()] 
+
 encoded_text = []
 for word in words:
     encoded_text.append(dictionary[word])
 
 text_length = len(encoded_text)
-input = torch.tensor([encoded_text[0:text_length-1]])
-target = torch.tensor([encoded_text[1:text_length]])
+input_text_encoded = torch.tensor([encoded_text[0:text_length-1]])
+target = torch.tensor([encoded_text[-30]])
 
 class SimpleRNN(nn.Module):
     def __init__(self, vocab_size, embed_size, hidden_size):
@@ -52,10 +54,17 @@ model = SimpleRNN(vocab_size, embed_size, hidden_size)
 model.load_state_dict(torch.load("my_rnn_model.pth"))
 model.eval()
 criterion = nn.CrossEntropyLoss()
-output = model(input)
-output = output.view(-1, vocab_size)
-target = target.view(-1)
-loss = criterion(output, target)
+reduced_input = torch.tensor(input_text_encoded[0, -30:])
+output = model(reduced_input)
 
-print(target, output)
-print(loss)
+num_words = input("How many words do you want to generate: ")
+
+for _ in range(int(num_words) + 1):
+    output = model(reduced_input)
+    highest_prob_idx = torch.argmax(output[-1]).item()
+    unique_words = list(dictionary.keys())
+    print(unique_words[highest_prob_idx], end=" ")
+    gen_word = unique_words_nums[highest_prob_idx]
+    reduced_input = reduced_input.tolist()
+    reduced_input.append(gen_word)
+    reduced_input = torch.tensor(reduced_input[-30:])
