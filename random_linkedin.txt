@@ -1,0 +1,23 @@
+Hey guys, I was affected by Amazon’s mass layoffs during the early hours of Tuesday, October 28th. It is a strange 
+feeling that I am struggling to describe to friends and family. You tell your coworkers that you will see them the 
+next day, but you wake up and can not access your work email, much less your office.
+While the past few days have been deeply unsettling, I have been reminded to slow down and take stock of my career 
+trajectory. My priority was finding a distraction, so I went to my first NBA game the next night. Following that, 
+I have spent a lot of time reflecting on my journey to Amazon as an electrical engineering major. 
+During the 2020 lockdown, I was working remotely at my first engineering internship and was desperate for all 
+interactions. At the time, my friends who were CS majors were preparing for interviews together via Zoom. I would 
+join in occasionally for fun. Although I had some computer science knowledge through requisite classes, I became 
+deeply inspired by my friends’ journeys. There began my drive to learn more about programming and earn my way into 
+this field. After weeks of studying using platforms like Leet Code, YouTube, and text. I picked up a computer 
+engineering minor. I also decided to apply for software development internships.
+I landed an internship at Amazon in Chicago during the summer of 2022. It was the best summer of my life, and I 
+worked extremely hard for a return offer to the team I enjoyed working at so much. I began my full time position in 
+January 2024, and it has been a life changing journey. I have learned so much more about end to end microservice 
+design and OE, and above all, I understand the power of resilience. I’m glad that I now have skills and experience 
+as both a software developer and an electrical engineer. 
+Now, I am working on refining myself even more to step up in my career. I am working on personal projects while job 
+hunting. My evening runs by the lake have also kept me going. Due to visa restrictions, I have the next 5 months 
+to land a new role, so I am leaning heavily on my network. Thank you to my friends and family who have offered 
+advice and sent me referrals. And to my LinkedIn network, you can support me by sharing this post and sending job 
+openings/referrals related to Software Development and Electrical Engineering. 
+Thank you.

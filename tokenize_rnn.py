@@ -58,7 +58,7 @@ class CustomTextDataset(Dataset):
 
 training_data = CustomTextDataset(inputs, targets)
 # Loading the data, keeping shuffle False for now
-train_loader = DataLoader(training_data, batch_size=2, shuffle=False)
+train_loader = DataLoader(training_data, batch_size=2, shuffle=True)
 
 # Model building
 class SimpleRNN(nn.Module):
@@ -81,7 +81,7 @@ optimizier = optim.Adam(MyRNN.parameters(), lr=0.001)
 criterion = nn.CrossEntropyLoss()
 
 # Training
-epochs = 1000
+epochs = 200
 tar_p, out_p = [], []
 for epoch in range(epochs):
     for inp, tar in train_loader:
@@ -96,4 +96,3 @@ for epoch in range(epochs):
     if epoch % 100 == 0: print(f"At epoch {epoch}, loss: {loss}")
 
 torch.save(MyRNN.state_dict(), "my_rnn_model.pth")
-
