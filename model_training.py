@@ -3,25 +3,30 @@ import torch.nn as nn
 from torch.utils.data.dataset import Dataset
 from torch.utils.data.dataloader import DataLoader
 import torch.optim as optim
+import pickle
 
-# Reading the file
+
+# Combining and reading all the text files
+file_paths = ["alice_wonderland.txt", "kids_stories.txt", "random_linkedin.txt", "shakespeare.txt"]
+all_text = ""
 try: 
-    with open("random_text.txt", encoding="utf-8") as file:
-        text = file.read()
+    for path in file_paths:   
+        with open(path, encoding="utf-8") as file:
+            all_text += file.read() + " "
 except FileNotFoundError:
     print("File not found")
 
 # Creating a dictionary of unique words and creating an array to store all the words
 word = ""
 words = []
-dictionary = {}
+model_vocab = {}
 num = 1
-for letter in text:
+for letter in all_text:
     if letter == " " or letter == "\n" or letter in ".?/,}{][)(=+-_*&^%$#@!;:":
         if word == "":
             continue
-        if word.lower() not in dictionary:
-            dictionary[word.lower()] = num 
+        if word.lower() not in model_vocab:
+            model_vocab[word.lower()] = num 
             num += 1
         words.append(word.lower())
         word = ""
@@ -31,7 +36,7 @@ for letter in text:
 # Encoding words to numerical values
 encoded_text = []
 for word in words:
-    encoded_text.append(dictionary[word])
+    encoded_text.append(model_vocab[word])
     
 # Converting the text to sequences of 30 each -> helps with training
 sequence_size = 30
@@ -57,7 +62,7 @@ class CustomTextDataset(Dataset):
         return self.inputs[idx], self.targets[idx]
 
 training_data = CustomTextDataset(inputs, targets)
-# Loading the data, keeping shuffle False for now
+# Loading the data
 train_loader = DataLoader(training_data, batch_size=2, shuffle=True)
 
 # Model building
@@ -73,14 +78,14 @@ class SimpleRNN(nn.Module):
         out = self.fc(out)
         return out
 
-vocab_size = len(dictionary) + 1
+vocab_size = len(model_vocab) + 1
 embed_size = 64
 hidden_size = 64
 MyRNN = SimpleRNN(vocab_size, embed_size, hidden_size)
 optimizier = optim.Adam(MyRNN.parameters(), lr=0.001)
 criterion = nn.CrossEntropyLoss()
 
-# Training
+# # Training
 epochs = 200
 tar_p, out_p = [], []
 for epoch in range(epochs):
@@ -93,6 +98,8 @@ for epoch in range(epochs):
         loss.backward()
         optimizier.step()
     tar_p, out_p = tar, output
-    if epoch % 100 == 0: print(f"At epoch {epoch}, loss: {loss}")
+    if epoch % 50 == 0: print(f"At epoch {epoch}, loss: {loss}")
 
-torch.save(MyRNN.state_dict(), "my_rnn_model.pth")
+torch.save(MyRNN.state_dict(), "my_rnn2_model.pth")
+with open("rnn2_vocab.pkl", "wb") as f:
+    pickle.dump(model_vocab, f)
