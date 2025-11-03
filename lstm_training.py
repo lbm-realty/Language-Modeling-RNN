@@ -90,9 +90,11 @@ optimizier = optim.Adam(MyLSTM.parameters(), lr=0.001)
 criterion = nn.CrossEntropyLoss()
 
 # Training
-epochs = 200
+epochs = 20
 tar_p, out_p = [], []
-for epoch in range(epochs):
+
+# Increasing epoch by 1 to see the error for the last value
+for epoch in range(epochs + 1):
     for inp, tar in train_loader:
         optimizier.zero_grad()
         output, hidden = MyLSTM(inp)
@@ -102,8 +104,6 @@ for epoch in range(epochs):
         loss.backward()
         optimizier.step()
     tar_p, out_p = tar, output
-    if epoch % 50 == 0: print(f"At epoch {epoch}, loss: {loss}")
+    if epoch % 20 == 0: print(f"At epoch {epoch}, loss: {loss}")
 
-torch.save(MyLSTM.state_dict(), "my_lstm_model.pth")
-# with open("_vocab.pkl", "wb") as f:
-#     pickle.dump(model_vocab, f)
+torch.save(MyLSTM.state_dict(), "lstm_20e.pth")

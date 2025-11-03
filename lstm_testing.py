@@ -11,6 +11,7 @@ try:
 except FileNotFoundError:
     print("File not found")
 
+# Creating a dictionary of unique words and creating an array to store all the words
 word = ""
 words = []
 model_vocab = {}
@@ -27,43 +28,42 @@ for letter in all_text:
     else:
         word += letter    
 
-unique_words_nums = [number for number in model_vocab.values()] 
-
+# Encoding words to numerical values
 encoded_text = []
 for word in words:
     encoded_text.append(model_vocab[word])
 
-input_text_encoded = torch.tensor([encoded_text])
+text_length = len(encoded_text)
+input = torch.tensor([encoded_text[0:text_length-1]])
+target = torch.tensor([encoded_text[1:text_length]])
 
-class SimpleRNN(nn.Module):
+class SimpleLSTM(nn.Module):
     def __init__(self, vocab_size, embed_size, hidden_size):
         super().__init__()
         self.embedding = nn.Embedding(vocab_size, embed_size)
-        self.rnn = nn.RNN(embed_size, hidden_size, batch_first=True)
+        self.lstm = nn.LSTM(embed_size, hidden_size, batch_first=True)
         self.fc = nn.Linear(hidden_size, vocab_size)
-    def forward(self, x):
+    def forward(self, x, hidden=None):
         x = self.embedding(x)
-        out, _ = self.rnn(x)
+
+        if hidden is None:
+            out, hidden = self.lstm(x)
+        else:
+            out, hidden = self.lstm(x, hidden)
         out = self.fc(out)
-        return out
+        return out, hidden
     
 # Testing
 vocab_size = len(model_vocab) + 1
 embed_size = 64
 hidden_size = 64
-model = SimpleRNN(vocab_size, embed_size, hidden_size)
-model.load_state_dict(torch.load("my_rnn2_model.pth"))
+model = SimpleLSTM(vocab_size, embed_size, hidden_size)
+model.load_state_dict(torch.load("lstm_20e.pth"))
 model.eval()
 criterion = nn.CrossEntropyLoss()
-reduced_input = torch.tensor(input_text_encoded[0, -30:]).unsqueeze(0)
-output = model(reduced_input)
+output, hidden = model(input)
+output = output.view(-1, vocab_size)
+target = target.view(-1)
+loss = criterion(output, target)
 
-num_words = input("How many words do you want to generate: ")
-idx_to_word = {v: k for k, v in model_vocab.items()}
-
-for _ in range(int(num_words)):
-    output = model(reduced_input)
-    next_word_idx = torch.argmax(output[0, -1]).item()
-    print(idx_to_word[next_word_idx], end=" ")
-    reduced_input = reduced_input.squeeze(0).tolist() + [next_word_idx]
-    reduced_input = torch.tensor(reduced_input[-30:]).unsqueeze(0)
+print(loss)
