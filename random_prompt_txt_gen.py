@@ -63,11 +63,11 @@ sequence_size = 30
 
 # Load models
 rnn_model = SimpleRNN(vocab_size, embed_size, hidden_size)
-rnn_model.load_state_dict(torch.load("rnn_10e.pth"))
+rnn_model.load_state_dict(torch.load("rnn_20e.pth"))
 lstm_model = SimpleLSTM(vocab_size, embed_size, hidden_size)
-lstm_model.load_state_dict(torch.load("lstm_10e.pth"))
+lstm_model.load_state_dict(torch.load("lstm_20e.pth"))
 
-prompt = "There was no one"
+prompt = "The cat was on the"
 encoded_prompt = [model_vocab.get(word) for word in prompt.lower().split()]
 
 words_to_gen = int(input("How many words do you want to generate? "))
@@ -75,16 +75,7 @@ words_to_gen = int(input("How many words do you want to generate? "))
 rnn_generation = generate_text(encoded_prompt, sequence_size, words_to_gen, rnn_model)
 lstm_generation = generate_text(encoded_prompt, sequence_size, words_to_gen, lstm_model)
 
-print("RNN output:")
+print("RNN output for 20 epochs:")
 print(" ".join(prompt.split() + rnn_generation))
-print("\nLSTM output:")
+print("\nLSTM output for 20 epochs:")
 print(" ".join(prompt.split() + lstm_generation))
-
-
-"""
-Observations:
-    for 20 epochs:
-    -> Does LSTM mix text accordingly: Yes
-    -> Does RNN mix text accordingly: Yes
-
-"""
