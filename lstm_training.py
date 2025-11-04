@@ -89,7 +89,7 @@ optimizier = optim.Adam(MyLSTM.parameters(), lr=0.001)
 criterion = nn.CrossEntropyLoss()
 
 # Training
-epochs = 100
+epochs = 10
 tar_p, out_p = [], []
 
 # Increasing epoch by 1 to see the error for the last value
@@ -105,7 +105,7 @@ for epoch in range(epochs + 1):
     tar_p, out_p = tar, output
     if epoch % 10 == 0: print(f"At epoch {epoch}, loss: {loss}")
 
-torch.save(MyLSTM.state_dict(), "lstm_50e.pth")
+torch.save(MyLSTM.state_dict(), "lstm_10e.pth")
 
 # Saving the training losses from terminal
 

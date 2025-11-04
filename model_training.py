@@ -86,7 +86,7 @@ optimizier = optim.Adam(MyRNN.parameters(), lr=0.001)
 criterion = nn.CrossEntropyLoss()
 
 # # Training
-epochs = 20
+epochs = 50
 tar_p, out_p = [], []
 for epoch in range(epochs):
     for inp, tar in train_loader:
@@ -100,7 +100,7 @@ for epoch in range(epochs):
     tar_p, out_p = tar, output
     if epoch % 10 == 0: print(f"At epoch {epoch}, loss: {loss}")
 
-torch.save(MyRNN.state_dict(), "rnn_20e.pth")
+torch.save(MyRNN.state_dict(), "rnn_50e.pth")
 with open("rnn2_vocab.pkl", "wb") as f:
     pickle.dump(model_vocab, f)
 
