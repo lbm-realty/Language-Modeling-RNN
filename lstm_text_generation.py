@@ -2,12 +2,9 @@ import torch as torch
 import torch.nn as nn
 
 """
-LSTM Models
-    -> my_lstm_model - 200 epochs
-    -> lstm_50e - 50 epochs, training error - 0.002, test error - 0.0014
-    -> lstm_50e - 20 epochs, training error - 0.155, test error - 0.0041
+Models
+    -> lstm_10e, lstm_20e, lstm_50e, lstm_100e
 """
-
 
 # Combining and reading all the text files
 file_paths = ["alice_wonderland.txt", "kids_stories.txt", "random_linkedin.txt", "shakespeare.txt"]
@@ -66,7 +63,7 @@ vocab_size = len(model_vocab) + 1
 embed_size = 64
 hidden_size = 64
 model = SimpleLSTM(vocab_size, embed_size, hidden_size)
-model.load_state_dict(torch.load("my_lstm_model.pth"))
+model.load_state_dict(torch.load("lstm_50e.pth"))
 model.eval()
 criterion = nn.CrossEntropyLoss()
 reduced_input = torch.tensor(input_text_encoded[0, -30:]).unsqueeze(0) 

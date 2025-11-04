@@ -3,7 +3,6 @@ import torch.nn as nn
 from torch.utils.data.dataset import Dataset
 from torch.utils.data.dataloader import DataLoader
 import torch.optim as optim
-import pickle
 
 
 # Combining and reading all the text files
@@ -90,7 +89,7 @@ optimizier = optim.Adam(MyLSTM.parameters(), lr=0.001)
 criterion = nn.CrossEntropyLoss()
 
 # Training
-epochs = 20
+epochs = 100
 tar_p, out_p = [], []
 
 # Increasing epoch by 1 to see the error for the last value
@@ -104,6 +103,22 @@ for epoch in range(epochs + 1):
         loss.backward()
         optimizier.step()
     tar_p, out_p = tar, output
-    if epoch % 20 == 0: print(f"At epoch {epoch}, loss: {loss}")
+    if epoch % 10 == 0: print(f"At epoch {epoch}, loss: {loss}")
 
-torch.save(MyLSTM.state_dict(), "lstm_20e.pth")
+torch.save(MyLSTM.state_dict(), "lstm_50e.pth")
+
+# Saving the training losses from terminal
+
+"""
+At epoch 0, loss: 2.6372008323669434
+At epoch 10, loss: 0.03272818773984909
+At epoch 20, loss: 0.029907794669270515
+At epoch 30, loss: 0.11129624396562576
+At epoch 40, loss: 0.05571934953331947
+At epoch 50, loss: 0.0013217307860031724
+At epoch 60, loss: 0.09435328096151352
+At epoch 70, loss: 0.0003759579558391124
+At epoch 80, loss: 0.00044325983617454767
+At epoch 90, loss: 0.00043487997027114034
+At epoch 100, loss: 0.04973514378070831
+"""
